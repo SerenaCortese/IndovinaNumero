@@ -2,6 +2,9 @@ package it.polito.tdp.indonumero;
 
 import java.security.InvalidParameterException;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+
 public class Model {
 	
 	//IL MODELLO SE C'è ERRORE MANDA UN CODICE D'ERRORE, POI IL CONTROLLER DECIDERà COSA FARE
@@ -10,12 +13,13 @@ public class Model {
 	private int TMAX = 7 ;
 	
 	private int segreto ; // numero da indovinare
-	private int tentativi ; // tentativi già fatti
-	
+	//private int tentativi ; tentativi già fatti
+	private IntegerProperty tentativi; //numero intero osservabili
 	private boolean inGame;
 	
 	public Model() {
 		this.inGame=false;
+		tentativi = new SimpleIntegerProperty();
 	}
 	/**
 	 * Avvia una nuova partita, generando un nuvo numero segreto.
@@ -24,7 +28,7 @@ public class Model {
 		
 		this.segreto = (int)(Math.random()*NMAX)+1 ;
     	
-    	this.tentativi = 0 ;
+    	this.tentativi.set(0);//non posso più mettere =0 perché è una properties ora. in più così viene aggiornato ovunque.
     	this.inGame = true ;
     	
 	}
@@ -62,8 +66,8 @@ public class Model {
 			throw new InvalidParameterException("Tentativo fuori range");
 		}
 		
-		this.tentativi++;
-		if(this.tentativi==this.TMAX) {//esauriti i tentativi==>FINE PARTITA
+		this.tentativi.set(this.tentativi.get()+1);;
+		if(this.tentativi.get()==this.TMAX) {//esauriti i tentativi==>FINE PARTITA
 			this.inGame = false;
 		}
 		if(t==this.segreto) {
@@ -74,10 +78,10 @@ public class Model {
 		}return +1;
 	}
 	
-	public int getTentativi() {
-		return this.tentativi;
-	}
-
+	//ho tolto il getTentativi perché ora è una properties
+	
+	
+	
 	public int getNMAX() {
 		return NMAX;
 	}
@@ -87,6 +91,15 @@ public class Model {
 	public boolean isInGame() {
 		return inGame;
 	}
+	public final IntegerProperty tentativiProperty() { //restituisce il reference della property
+		return this.tentativi;
+	}
+	
+	public final int getTentativi() { //i metodi get e set rendono tentativi come un semplice numero intero non una property
+		return this.tentativiProperty().get();
+	}
+	
+	
 
 
 }

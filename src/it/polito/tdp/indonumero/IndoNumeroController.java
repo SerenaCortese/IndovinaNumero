@@ -12,12 +12,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import javafx.util.converter.NumberStringConverter;
 
 public class IndoNumeroController {
 	
-	//ACQUISIZIONE DATI E TR....audio
+	//ACQUISIZIONE DATI
 	
-	private Model model; //dato non crea il controller il model non posso crearlo da costruttore ma con un setter
+	private Model model; //il controller non crea il model=>non posso crearlo da costruttore ma con un setter
 	
     
 
@@ -52,7 +53,7 @@ public class IndoNumeroController {
     	
     	btnNuova.setDisable(true);
     	boxGioco.setDisable(false);
-    	txtCurr.setText(String.format("%d", model.getTentativi()));
+    	//txtCurr.setText(String.format("%d", model.getTentativi()));
     	txtMax.setText(String.format("%d", model.getTMAX()));
     	txtLog.clear() ;
     	txtTentativo.clear();
@@ -76,6 +77,7 @@ public class IndoNumeroController {
     	try {
     		//LA CONVERSIONE STRINGA-INTERO DEVE RIMANERE AL CONTROLLER
     		//il modello deve lavorare sempre con oggetti non con testo
+    		
     		int num = Integer.parseInt(numS) ;
     		// numero era effettivamente un intero
     		
@@ -85,7 +87,7 @@ public class IndoNumeroController {
     		}
     		
     		int risultato = model.tentativo(num);
-    		txtCurr.setText(String.format("%d", model.getTentativi()));
+    		//txtCurr.setText(String.format("%d", model.getTentativi()));
     		
     		if(risultato ==0){
     			// ha indovinato
@@ -118,17 +120,23 @@ public class IndoNumeroController {
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
-    void initialize() {
+    void initialize() { //viene chiamato quando model non c'è ancora,main non ha fatto setModel
         assert btnNuova != null : "fx:id=\"btnNuova\" was not injected: check your FXML file 'IndoNumero.fxml'.";
         assert txtCurr != null : "fx:id=\"txtCurr\" was not injected: check your FXML file 'IndoNumero.fxml'.";
         assert txtMax != null : "fx:id=\"txtMax\" was not injected: check your FXML file 'IndoNumero.fxml'.";
         assert boxGioco != null : "fx:id=\"boxGioco\" was not injected: check your FXML file 'IndoNumero.fxml'.";
         assert txtTentativo != null : "fx:id=\"txtTentativo\" was not injected: check your FXML file 'IndoNumero.fxml'.";
         assert txtLog != null : "fx:id=\"txtLog\" was not injected: check your FXML file 'IndoNumero.fxml'.";
-
     }
     
     public void setModel(Model model) {
 		this.model = model;
-	}
+		
+		//chiedo il riferimento alla proprietà che determina il valore del testo
+		//e lo collego al riferimento di tentativi nel model così che quando modifico tentativi modifico anche txtCurr
+		
+		txtCurr.textProperty().bindBidirectional(model.tentativiProperty(),new NumberStringConverter());
+    }
+    
+    
 }
